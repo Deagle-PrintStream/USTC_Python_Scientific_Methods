@@ -1,0 +1,107 @@
+
+'''Q1'''
+
+import math
+import sys
+
+class InvalidTriangleError(Exception):
+  def __init__(self, message:str="InvalidTriangleError") -> None:
+    self.message=message
+
+def calculate_area(a:float,b:float,c:float)->float:
+  s=(a+b+c)/2
+  area=math.sqrt(s*(s-a)*(s-b)*(s-c))
+  return area
+
+def check(a,b,c)->bool:
+  '''check if three edges can form a legal triangle'''
+  if min(a,b,c)<0:
+    return False  
+  sum=a+b+c
+  if max(a,b,c)>=sum/2:
+    return False
+  return True
+
+def main()->None:
+  try:
+    a=float(sys.argv[1])
+    b=float(sys.argv[2])
+    c=float(sys.argv[3])
+
+    if check(a,b,c)==False:
+      raise InvalidTriangleError()
+    area=calculate_area(a,b,c)
+    print("Area is: %.2f"%area)
+
+  except IndexError:
+    print("Three arguments are required.")
+  except ValueError:
+    print("Arguments must be float type.")
+  except InvalidTriangleError:
+    print("Arguments cannot form a legal triangle.")
+
+if __name__ =="__main__":
+  main()
+
+In[]:
+python.exe '.\lab7\Q1.py' 1 2 
+Out[]:
+Three arguments are required.
+
+In[]:
+python.exe '.\lab7\Q1.py' a b c 
+Out[]:
+Arguments must be float type.
+
+In[]:
+python.exe '.\lab7\Q1.py' 1 2 3
+Out[]:
+Arguments cannot form a legal triangle.
+
+In[]:
+python.exe '.\lab7\Q1.py' 3 4 5     
+Out[]:
+Area is: 6.00
+
+'''Q2'''
+
+'''./Q2.py'''
+
+import re
+import sys,os
+
+def read(filename:str="./input_file.txt")->list[str]:
+  code:list[str]=[]
+  with open(file=filename,encoding="utf-8",mode='r') as f_in:
+    lines=f_in.readlines()
+    for line in lines:
+      new_code=re.findall(r"In\[\d{1,2}\]:(.*)",line)
+      if len(new_code)>0:
+        code.append(new_code[0]+"\n")
+  
+  return code
+
+def write(code:list[str],filename:str="./output_file.txt")->None:
+  try:
+    with open(file=filename,mode="w",encoding="utf-8") as f_out:
+      f_out.writelines(code)
+  except FileNotFoundError:
+    raise FileNotFoundError()
+
+
+os.chdir(sys.path[0])
+code_list=read()
+write(code_list)
+
+'''./output_file.txt'''
+
+ import numpy as np; a = np.arange(1, 16, 2)**2; a
+ b = a.reshape(2, 4); b
+ np.savetxt('D:/Python/dat/b.txt', b)
+ c = np.loadtxt('D:/Python/dat/b.txt'); c
+ np.save('D:/Python/dat/b.npy', b)
+ c = np.load('D:/Python/dat/b.npy'); c
+ np.savez('D:/Python/dat/ab.npz', a, b)
+ cd = np.load('D:/Python/dat/ab.npz')
+ c = cd['arr_0']; c
+ d = cd['arr_1']; d

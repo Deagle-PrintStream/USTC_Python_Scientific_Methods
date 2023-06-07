@@ -1,0 +1,154 @@
+'''
+Experimental Report for Exp 4
+
+刘眭怿 PB20061256
+
+'''
+
+'''Binary searching'''
+
+def is_sorted(s):
+	if len(s)<=1:
+		return True
+	for i in range(0,len(s)-1):
+		if s[i]>s[i+1]:
+			return False
+		else:
+			continue
+	return True
+
+def qsort(s):  
+	if len(s) <= 1: return s
+	s_less = []; s_greater = []; s_equal = []
+	for k in s:
+		if k < s[0]:
+			s_less.append(k)
+		elif k > s[0]:
+			s_greater.append(k)
+		else:
+			s_equal.append(k)
+	return qsort(s_less) + s_equal + qsort(s_greater)
+
+def binary_search(s, low, high, k):  
+	if low>high:
+		return -1
+	mid=(low+high)//2 #math.floor
+
+	if s[mid]==k:
+		return mid
+	elif s[mid]>k:
+		return binary_search(s,low,mid-1,k)
+	elif s[mid]<k:
+		return binary_search(s,mid+1,high,k)
+
+s = [5, 6, 21, 32, 51, 60, 67, 73, 77, 99]
+
+if not is_sorted(s):
+	s = qsort(s)
+
+In[]:
+print(binary_search(s, 0, len(s) - 1, 5))  
+print(binary_search(s, 0, len(s) - 1, 31)) 
+print(binary_search(s, 0, len(s) - 1, 99)) 
+print(binary_search(s, 0, len(s) - 1, 64)) 
+print(binary_search(s, 0, len(s) - 1, 51)) 
+
+Out[]:
+0
+-1
+9
+-1
+4
+
+'''Module for performing arithmetic operations for rational numbers.'''
+
+import sys, math
+
+@staticmethod	#get the numerator
+def num(x:list[int])->int:
+  return x[0]
+
+@staticmethod #get the denominator
+def den(x:list[int])->int:
+  return x[1]
+
+def test_all_functions():  
+	x=[2,3]; y=[-70,40]
+	ans=(add(x,y)==[-13,12])
+  print(ans)
+	x=[-20,3]; y=[120,470]
+	ans=(sub(x,y)==[-976,141])
+  print(ans)
+	x=[-6,19]; y=[-114,18]
+	ans=(mul(x,y)==[2,1])
+  print(ans)
+	x=[-6,19]; y=[-114,-28]
+	ans=(div(x,y)==[-28,361])
+  print(ans)
+
+def gcd(a, b):  
+  while a != b:
+    if a > b:
+      a -= b
+    else:
+      b -= a
+  return a
+
+def reduce(n, d)->list[int]:
+  if d<0:
+    d=-d
+    n=-n
+  new_gcd=gcd(abs(n),abs(d))  
+  return [n//new_gcd,d//new_gcd]
+  
+def add(x, y):  
+	n=num(x)*den(y)+num(y)*den(x)
+	d=den(x)*den(y)
+	return reduce(n,d)
+
+def sub(x, y):  
+	n=num(x)*den(y)-num(y)*den(x)
+	d=den(x)*den(y)
+	return reduce(n,d)
+
+def mul(x, y):  
+	n=num(x)*num(y)
+	d=den(x)*den(y)
+	return reduce(n,d)
+
+def div(x, y):  
+	n=num(x)*den(y)
+	d=den(x)*num(y)
+	return reduce(n,d)
+
+def output(x:list[int]):
+	print("%d/%d"%(num(x),den(x)))
+
+def get_rational(s:str)->list[int]:  
+  s=s.replace("(","")
+  s=s.replace(")","")
+  num_list=s.split("/")
+  n=int(num_list[0])
+  d=int(num_list[1])
+  
+  return [n,d]
+
+if __name__ == '__main__':
+  if len(sys.argv) == 1:
+    print(__doc__)
+  elif len(sys.argv) == 2 and sys.argv[1] == '-h':
+    print(__doc__)
+  elif len(sys.argv) == 2 and sys.argv[1] == 'test':
+    test_all_functions()
+  else:
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--op', type=str)
+    parser.add_argument('--x', )
+    parser.add_argument('--y', )
+    args = parser.parse_args()
+    op = args.op
+
+    x = get_rational(args.x); y = get_rational(args.y)
+    f = {'add':add, 'sub':sub, 'mul':mul, 'div':div}
+    output(f[op](x, y))

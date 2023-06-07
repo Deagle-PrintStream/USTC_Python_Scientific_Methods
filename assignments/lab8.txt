@@ -1,0 +1,218 @@
+'''Q1'''
+
+def search_3_sum(x: int, s: list[int]) -> list[tuple[int, int, int]] | None:
+    '''
+    find 3 elements from list s, such that their sum is x,\n
+    output a list of all combination in tuple type.\n
+    Total time expense is O(n^2),\n
+    sorting is O(n lg n),which can be neglected.\n
+    which satisfied the demand of O(n^2 lg n)\n
+    '''
+    answer_list = []
+    s.sort()  # O(n lg n) if we use quick sort
+
+    for i in range(0, len(s) - 3): # O(n)
+        a = s[i]
+        left = i + 1
+        right = len(s) - 1
+
+        while left < right: #O(n)
+            if s[left] + s[right] == x - a:
+                answer_list.append((a, s[left], s[right]))
+                left += 1
+                right -= 1
+            elif s[left] + s[right] > x - a:
+                right -= 1
+            else:
+                left += 1
+
+    if len(answer_list) == 0:
+        return None
+    else:
+        return answer_list
+
+In[]:
+x = 152
+s = [21, 73, 6, 67, 99, 60, 77, 5, 51, 32]
+answer = search_3_sum(x, s)
+print(answer)
+
+Out[]:
+[(21, 32, 99)]
+
+'''Q2'''
+import timeit
+
+##### start of Listing 8.1 ##### 
+insert_sort_str='''\
+import random
+def insertion_sort(s):
+    n=len(s)
+    for i in range(1, n):
+        value = s[i]
+        pos = i
+        while pos > 0 and value < s[pos - 1] :
+            s[pos] = s[pos - 1]
+            pos -= 1
+        s[pos] = value
+
+n:int=%d
+s=[random.random() for i in range(n)]
+insertion_sort(s)
+'''
+##### end of Listing 8.1 ##### 
+
+##### start of Listing 8.3 ##### 
+
+merge_sort_str='''\
+import random
+def merge_ordered_lists(s1, s2):
+    t = []
+    i = j = 0
+    while i < len(s1) and j < len(s2):
+        if s1[i] < s2[j]:
+            t.append(s1[i]); i += 1
+        else:
+            t.append(s2[j]); j += 1
+    t += s1[i:]
+    t += s2[j:]
+    return t
+
+def merge_sort(s):
+    if len(s) <= 1:
+        return s
+    mid = len(s) // 2
+    left = merge_sort(s[:mid])
+    right = merge_sort(s[mid:])
+    return merge_ordered_lists(left, right)
+
+n:int=%d
+s=[random.random() for i in range(n)]
+merge_sort(s)
+'''
+##### end of Listing 8.3 ##### 
+
+quick_sort_str="""\
+import random
+def partition(arr, left, right):
+    pivot = arr[right]
+    i = left - 1
+    for j in range(left, right):
+        if arr[j] <= pivot:
+            i += 1
+            arr[j], arr[i] = arr[i], arr[j]
+    arr[i+1], arr[right] = arr[right], arr[i+1]
+    return i+1
+
+def quick_sort(arr, left, right):
+    if left < right:
+        p = partition(arr, left, right)
+        quick_sort(arr, left, p-1)
+        quick_sort(arr, p+1, right)
+
+n:int=%d
+s=[random.random() for i in range(n)]
+quick_sort(s,0,n-1)
+"""
+
+In[]:
+N=10 #trails for each algorithm
+print("Insertion sort time expense:")
+for n in range(100,1001,100):
+    t=timeit.timeit(stmt=insert_sort_str % n,number=N)/N
+    print("#%d : %.5f"%(n,t),end='\t')
+
+print("Merge sort time expense:")
+for n in range(100,1001,100):
+    t=timeit.timeit(stmt=merge_sort_str % n,number=N)/N
+    print("#%d : %.5f"%(n,t),end='\t')
+
+print("Quick sort time expense:")
+for n in range(100,1001,100):
+    t=timeit.timeit(stmt=quick_sort_str % n,number=N)/N
+    print("#%d : %.5f"%(n,t),end='\t')
+
+Out[]:
+Insertion sort time expense:
+#100 : 0.00033  #200 : 0.00076  #300 : 0.00168  #400 : 0.00312  #500 : 0.00508  #600 : 0.00760  #700 : 0.01065  #800 : 0.01421  #900 : 0.01702  
+#1000 : 0.02189 
+Merge sort time expense:
+#100 : 0.00013  #200 : 0.00026  #300 : 0.00041  #400 : 0.00056  #500 : 0.00072  #600 : 0.00090  #700 : 0.00108  #800 : 0.00131  #900 : 0.00140  
+#1000 : 0.00177 
+Quick sort time expense:
+#100 : 0.00007  #200 : 0.00016  #300 : 0.00024  #400 : 0.00035  #500 : 0.00044  #600 : 0.00057  #700 : 0.00067  #800 : 0.00076  #900 : 0.00084  
+#1000 : 0.00094
+
+
+'''Q3'''
+from line_profiler import LineProfiler
+import random
+
+##### start of Listing 8.3 ##### 
+def merge_ordered_lists(s1, s2):
+    t = []
+    i = j = 0
+    while i < len(s1) and j < len(s2):
+        if s1[i] < s2[j]:
+            t.append(s1[i]); i += 1
+        else:
+            t.append(s2[j]); j += 1
+    t += s1[i:]
+    t += s2[j:]
+    return t
+
+def merge_sort(s):
+    
+    if len(s) <= 1:
+        return s
+    mid = len(s) // 2
+    left = merge_sort(s[:mid])
+    right = merge_sort(s[mid:])
+    return merge_ordered_lists(left, right)
+
+##### end of Listing 8.3 ##### 
+
+In[]:
+N=1000
+s=[random.random() for i in range(N)]
+lp=LineProfiler()
+lp.add_function(merge_ordered_lists)
+lp_wrapper=lp(merge_sort)
+lp_wrapper(s)
+lp.print_stats()
+
+Out[]:
+Timer unit: 1e-07 s
+
+Total time: 0.007818 s
+File: d:\Code\lab8\Q3.py
+Function: merge_ordered_lists at line 6
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+     6                                           def merge_ordered_lists(s1, s2):      
+     7       999       1760.0      1.8      2.3      t = []
+     8       999       1866.0      1.9      2.4      i = j = 0
+     9      8691      27837.0      3.2     35.6      while i < len(s1) and j < len(s2):
+    10      4416      10491.0      2.4     13.4          if s1[i] < s2[j]:
+    11      4275      14608.0      3.4     18.7              t.append(s1[i]); i += 1   
+    12                                                   else:
+    13      4416      14050.0      3.2     18.0              t.append(s2[j]); j += 1   
+    14       999       3045.0      3.0      3.9      t += s1[i:]
+    15       999       2755.0      2.8      3.5      t += s2[j:]
+    16       999       1768.0      1.8      2.3      return t
+
+Total time: 0.0175746 s
+File: d:\Code\lab8\Q3.py
+Function: merge_sort at line 18
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    18                                           def merge_sort(s):
+    19
+    20      1000       2485.0      2.5      1.4      if len(s) <= 1:
+    21      1000       1769.0      1.8      1.0          return s
+    22       999       2543.0      2.5      1.4      mid = len(s) // 2
+    23       999       3812.0      3.8      2.2      left = merge_sort(s[:mid])
+    24       999       5573.0      5.6      3.2      right = merge_sort(s[mid:])
+    25       999     159564.0    159.7     90.8      return merge_ordered_lists(left, right)

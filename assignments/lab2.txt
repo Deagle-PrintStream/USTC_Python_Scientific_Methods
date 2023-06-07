@@ -1,0 +1,136 @@
+'''
+Experimental Report for Exp 2
+
+刘眭怿 PB20061256
+
+'''
+
+'''calculation of float type'''
+
+In[]:
+def loan(A:float,r:float,n:int)->tuple[float,float]:
+	'''A: capital, r: interst rate, n: months'''
+	annual_rate=r/12
+	P=annual_rate*A/(1-(1+annual_rate)**(-n))
+	repay=n*P
+	return P,repay
+
+In[]:print(loan(1e6,0.04,30*12))
+Out[]:(4774.152954654538, 1718695.0636756336)
+In[]:print(loan(1e6,0.05,30*12))
+Out[]:(5368.216230121398, 1932557.8428437035)
+In[]:print(loan(1e6,0.06,30*12))
+Out[]:(5995.505251527569, 2158381.890549925)
+
+'''math module usage'''
+
+In[]:
+import math
+def angle(op:float,adj1:float,adj2:float)->float:
+	'''op: opposite side, adj: two adjacent side\n
+	return the degree of angle between 0 and 180'''
+	cos_value=(-op**2+adj1**2+adj2**2)/(2*adj1*adj2)
+	radian=math.acos(cos_value)
+	degree=radian*180/math.pi
+	return degree
+
+a=3
+b=6
+c=7
+alpha=angle(a,b,c)
+beta=angle(b,a,c)
+gamma=angle(c,b,a)
+
+In[]:print((alpha,beta,gamma))
+Out[]:(25.208765296758365, 58.41186449479884, 96.37937020844281)
+In[]:print(alpha+beta+gamma)
+Out[]:180.0
+
+'''operations on list type'''
+
+In[]:s=[2,4,0,1,3,9,5,8,6,7]; t=[2,6,8,4]
+In[]:
+s=[2,4,0,1,3,9,5,8,6,7]
+s[3]=8
+s
+Out[]:[2, 4, 0, 8, 3, 9, 5, 8, 6, 7]
+In[]:
+s=[2,4,0,1,3,9,5,8,6,7]
+s[1:4]=t
+s
+Out[]:[2, 2, 6, 8, 4, 3, 9, 5, 8, 6, 7]
+In[]:
+s=[2,4,0,1,3,9,5,8,6,7]
+del s[2:4]
+s
+Out[]:[2, 4, 3, 9, 5, 8, 6, 7]
+In[]:
+s=[2,4,0,1,3,9,5,8,6,7]
+s[0:8:2]=t
+s
+Out[]:[2, 4, 6, 1, 8, 9, 4, 8, 6, 7]
+In[]:
+s=[2,4,0,1,3,9,5,8,6,7]
+del s[0:4:2]
+s
+Out[]:[4, 1, 3, 9, 5, 8, 6, 7]
+In[]:
+s=[2,4,0,1,3,9,5,8,6,7]
+s.append(13)
+s
+Out[]:[2, 4, 0, 1, 3, 9, 5, 8, 6, 7, 13]
+In[]:
+s=[2,4,0,1,3,9,5,8,6,7]
+s.clear()
+s
+Out[]:[]
+In[]:
+s=[2,4,0,1,3,9,5,8,6,7]
+s.copy()
+Out[]:[2, 4, 0, 1, 3, 9, 5, 8, 6, 7]
+In[]:
+s=[2,4,0,1,3,9,5,8,6,7]
+s.extend(t)
+s
+Out[]:[2, 4, 0, 1, 3, 9, 5, 8, 6, 7, 2, 6, 8, 4]
+In[]:
+s=[2,4,0,1,3,9,5,8,6,7]
+s+=t
+s
+Out[]:[2, 4, 0, 1, 3, 9, 5, 8, 6, 7, 2, 6, 8, 4]
+In[]:
+s=[2,4,0,1,3,9,5,8,6,7]
+s*=2
+s
+Out[]:[2, 4, 0, 1, 3, 9, 5, 8, 6, 7, 2, 4, 0, 1, 3, 9, 5, 8, 6, 7]
+In[]:
+s=[2,4,0,1,3,9,5,8,6,7]
+s.insert(2,19)
+s
+Out[]:[2, 4, 19, 0, 1, 3, 9, 5, 8, 6, 7]
+In[]:
+s=[2,4,0,1,3,9,5,8,6,7]
+s.pop(3)
+s
+Out[]:[2, 4, 0, 3, 9, 5, 8, 6, 7]
+In[]:
+s=[2,4,0,1,3,9,5,8,6,7]
+s.remove(4)
+s
+Out[]:[2, 0, 1, 3, 9, 5, 8, 6, 7]
+In[]:
+s=[2,4,0,1,3,9,5,8,6,7]
+s.reverse()
+s
+Out[]:[7, 6, 8, 5, 9, 3, 1, 0, 4, 2]
+In[]:
+s=[2,4,0,1,3,9,5,8,6,7]
+s.sort()
+s
+Out[]:[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+In[]:
+s=[2,4,0,1,3,9,5,8,6,7]
+s.sort(reverse=True)
+s
+Out[]:[9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+

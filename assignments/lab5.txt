@@ -1,0 +1,193 @@
+'''
+Experimental Report for Exp5
+Áõíõâø PB20061256
+'''
+##### start of Listing 5.9 ##### 
+def gcd(a, b):  
+    while a != b:
+        if a > b:
+            a -= b
+        else:
+            b -= a
+    return a
+
+class Rational:
+    def __init__(self, n=0, d=1):  
+
+        _nu:int = int(n); _de:int = int(d)
+        if _de==0:
+            raise ValueError('Error: denominator cannot be zero')
+        if _de<0:
+            _nu=-_nu; _de=-_de           
+        if _nu!=0:         
+            _gcd:int=gcd(abs(_nu),_de)
+            _nu//=_gcd ; _de//=_gcd
+        self.__dict__['nu'] = _nu; self.__dict__['de'] = _de
+
+    def __setattr__(self, name, value):
+        raise TypeError('Error: Rational objects are immutable')
+
+    def __str__(self): return '%d/%d' % (self.nu, self.de)
+
+    def __add__(self, other):  
+        new_nu=self.nu*other.de+self.de*other.nu
+        new_de=self.de*other.de
+        return Rational(new_nu,new_de)
+
+    def __sub__(self, other):  
+        new_nu=self.nu*other.de-self.de*other.nu
+        new_de=self.de*other.de
+        return Rational(new_nu,new_de)
+    
+    def __mul__(self, other):  
+        new_nu=self.nu*other.nu
+        new_de=self.de*other.de
+        return Rational(new_nu,new_de)
+    
+    def __truediv__(self, other):  
+        new_nu=self.nu*other.de
+        new_de=self.de*other.nu
+        return Rational(new_nu,new_de)
+    
+    def __eq__(self, other):  
+        diff:Rational=self-other
+        return bool(diff.nu==0)
+    
+    def __ne__(self, other):  
+        diff:Rational=self-other
+        return bool(diff.nu!=0)
+
+    def __gt__(self, other):  
+        diff:Rational=self-other
+        return bool(diff.nu>0)
+
+    def __lt__(self, other):  
+        diff:Rational=self-other
+        return bool(diff.nu<0)
+
+    def __ge__(self, other):  
+        diff:Rational=self-other
+        return bool(diff.nu>=0)
+
+    def __le__(self, other):  
+        diff:Rational=self-other
+        return bool(diff.nu<=0)
+    
+def test():
+    testsuite = [
+        ('Rational(2, 3) + Rational(-70, 40)',
+          Rational(-13, 12)),
+        ('Rational(-20, 3) - Rational(120, 470)',
+          Rational(-976,141)),
+        ('Rational(-6, 19) * Rational(-114, 18)',
+          Rational(2, 1)),
+        ('Rational(-6, 19) / Rational(-114, -28)',
+          Rational(-28,361)),
+
+        ('Rational(-6, 19) == Rational(-14, 41)', False),
+        ('Rational(-6, 19) != Rational(-14, 41)', True),
+        ('Rational(6, -19) > Rational(14, -41)', True),
+        ('Rational(-6, 19) < Rational(-14, 41)', False),
+        ('Rational(-6, 19) >= Rational(-14, 41)', True),
+        ('Rational(6, -19) <= Rational(14, -41)', False),
+        ('Rational(-15, 8) == Rational(120, -64)', True),
+    ]
+    for t in testsuite:
+        try:
+            result = eval(t[0])
+        except:
+            print('Error in evaluating ' + t[0]); continue
+
+        if result != t[1]:
+            print('Error:  %s != %s' % (t[0], t[1]))
+    print("All passed.\n")
+
+if __name__ == '__main__':
+    test()
+##### end of Listing 5.9 ##### 
+
+##### start of Listing 5.10 ##### 
+import math
+
+class Integrator:
+    def __init__(self, a, b, n):
+        self.a, self.b, self.n = a, b, n
+        self.points, self.weights = self.compute_points()
+
+    def compute_points(self):
+        raise NotImplementedError(self.__class__.__name__)
+
+    def integrate(self, f)->float:  
+        sum:float=0
+        for (x,w) in zip(self.points,self.weights):
+            sum+=f(x)*w
+        return sum
+
+class Trapezoidal(Integrator):
+    def compute_points(self):  
+        h:float=(self.b-self.a)/self.n
+        x_list:list[float]=[self.a+h*i for i in range(0,self.n+1)]
+
+        w_list:list[float]=[h]*(self.n+1)
+        w_list[0]=h/2
+        w_list[-1]=h/2
+        return x_list,w_list
+
+
+class Simpson(Integrator):
+    def compute_points(self):  
+        if self.n %2 ==1:
+            self.n +=1
+        h:float=(self.b-self.a)/self.n
+
+        x_list:list[float]=[self.a+h*i for i in range(0,self.n+1)]
+
+        w_odd=4*h/3; w_even=2*h/3
+        w_list:list[float]=[0]*(self.n+1)
+        for i in range(0,self.n,2):
+            w_list[i+1]=w_odd
+            w_list[i]=w_even
+        w_list[0]=h/3; w_list[-1]=h/3
+        return x_list,w_list
+
+
+class GaussLegendre(Integrator):
+    def compute_points(self):  
+        if self.n %2 ==0:
+            self.n +=1
+
+        h:float=2*(self.b-self.a)/(self.n+1)
+        x_list:list[float]=[0]*(self.n+1)
+        for i in range(0,self.n,2):
+            x_list[i]=self.a+(i+1)*h/2-math.sqrt(3)*h/6
+            x_list[i+1]=self.a+(i+1)*h/2+math.sqrt(3)*h/6
+        
+        w_list:list[float]=[h/2]*(self.n+1)
+        return x_list,w_list
+
+def test():
+    def f(x): return (x * math.cos(x) + math.sin(x)) * \
+                      math.exp(x * math.sin(x))
+    def F(x): return math.exp(x * math.sin(x))
+
+    a = 2; b = 3; n = 200
+    I_exact = F(b) - F(a)
+    tol = 1E-3
+
+    methods = [Trapezoidal, Simpson, GaussLegendre]
+    for method in methods:
+        integrator = method(a, b, n)
+        I = integrator.integrate(f)
+        rel_err = abs((I_exact - I) / I_exact)
+        print('%s: %g' % (method.__name__, rel_err))
+        if rel_err > tol:
+            print('Error in %s' % method.__name__)
+
+if __name__ == '__main__':
+    test()
+##### end of Listing 5.10 ##### 
+
+Out[]:
+Trapezoidal: 1.11677e-05
+Simpson: 1.77128e-10
+GaussLegendre: 1.13478e-10

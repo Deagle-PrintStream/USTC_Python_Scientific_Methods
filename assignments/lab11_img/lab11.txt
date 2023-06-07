@@ -1,0 +1,103 @@
+
+'''Q1'''
+
+import matplotlib.pyplot as plt
+
+from numpy import linspace,sin,cos
+from scipy import interpolate
+
+#define x,y axis
+x=linspace(0,10,num=21,endpoint=True)
+y=(5*sin(3*x/8)+3)*cos(-(x**2)/9)
+
+xx=linspace(x.min(),x.max(),100)
+
+f=interpolate.interp1d(x,y,kind='cubic')
+
+#plot the graph
+plt.figure(figsize=(8,4),dpi=300)
+plt.xticks(range(0,11,1));plt.yticks(range(-8,6,1))
+plt.scatter(x,y,label="data points")
+plt.plot(xx,f(xx),'r--',lw=2,label="spline of order 3")
+plt.xlabel('$x$');plt.ylabel('$y$')
+plt.title('Polynomial')
+plt.legend();plt.grid(linestyle=':');plt.show()
+
+Out[]:./fig_1.png
+
+'''Q2'''
+
+import sympy as sym
+from numpy import sin,cos
+import numpy as np
+from scipy import optimize as opt
+
+x,y=sym.symbols("x,y")
+
+f_mat=sym.Matrix([y*sym.sin(x)-4,x*y-x-5])
+
+j=f_mat.jacobian(sym.Matrix([x,y]))
+print(j)
+
+#X is the array of all unkown elements, including x,y
+def f(X):
+    return [X[1]*sin(X[0])-4,\
+            X[0]*X[1]-X[0]-5]
+
+def f2(X)->tuple:
+    f_j=np.array([[X[1]*cos(X[0]),sin(X[0])],\
+                  [X[1]-1,X[0]]])
+    return f(X),f_j
+
+ans=opt.root(f2,[1,1],jac=True,method='lm')
+print(ans)
+
+'''
+Out[]:
+Matrix([[y*cos(x), sin(x)], [y - 1, x]])
+x: array([1.6581955, 4.015326 ])
+'''
+
+'''Q3'''
+
+'''
+f''-2f'+3f-4=0
+f(0)=16
+f'(0)=18
+<==>
+d/dt y1=y2
+d/dt y2=2*y2-3*y1+4
+y1(0)=16
+y2(0)=18
+'''
+
+from scipy.integrate import solve_ivp
+import numpy as np
+from numpy import sin,cos,sqrt,exp
+import matplotlib.pyplot as plt
+
+def Eq(x,Y):
+    y1,y2=Y
+    return np.array([y2,2*y2-3*y1+4])
+
+x_max=10; n=1000
+y1_0=16;y2_0=18
+
+X=np.linspace(0,x_max,n)
+
+ht=solve_ivp(Eq,[0,x_max],[y1_0,y2_0],t_eval=X)
+y_numerical=ht.y[0]
+y_analytical=(-10.3708994574027*sin(sqrt(2)*X) + \
+              14.6666666666667*cos(sqrt(2)*X))*exp(X) + 1.33333333333333
+
+title_str='''$f\'\'(x)-2f\'(x)+3f(x)-4=0$'''
+
+plt.figure(figsize=(8,4),dpi=300)
+plt.xticks(range(0,11,1))
+plt.xlabel("$x$");plt.ylabel("$y$")
+plt.plot(X,y_numerical,'b--',label='numerical solution')
+plt.plot(X,y_analytical,color='r',label='analytical solution')
+plt.legend(loc='best');plt.grid(linestyle=':')
+plt.title(title_str);plt.show()
+
+Out[]:./fig_3.png

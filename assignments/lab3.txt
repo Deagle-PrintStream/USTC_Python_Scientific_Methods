@@ -1,0 +1,109 @@
+'''
+Experimental Report for Exp 3
+
+刘眭怿 PB20061256
+'''
+
+'''Collatz conjecture'''
+
+def collatz(n:int)->str:
+	m:int=n
+	conj:list[int]=[m]
+	while(m!=1):
+		if m%2==0:
+			m=m//2
+		else:
+			m=3*m+1
+		conj.append(m)
+	output:str=str(conj)
+	output=output.replace(",","")
+	output=output.replace("[","")
+	output=output.replace("]","")
+	return output
+
+n=int(input())
+print(collatz(n))
+
+In[]:17
+Out[]:17 52 26 13 40 20 10 5 16 8 4 2 1
+
+
+'''encoding string'''
+
+def encode(offset:int,text:str)->str | None:
+	if offset<-15:
+		return None
+	encoded=str()
+	for char in text:		
+		char=chr(ord(char)+offset)
+		encoded+=char
+	return encoded
+
+offset=int(input("offset:"))
+text=input("text:")
+encode(offset,text)
+
+In[]:4
+In[]:abc123
+Out[]:efg567
+
+#How to decode this string?
+
+def decode(offset:int,text:str)->str:
+	decoded:str=""
+	for char in text:
+		new_char=chr(ord(char)-offset)
+		decoded+=new_char
+	return decoded
+
+#How to optimize this encoding algorithm? 
+#(e.g. pre-set individual offset for each char in string):
+
+def encode2(offset_list:list[int],text:str)->str |None:
+	if len(offset_list)!=len(text):
+		return None
+	encoded=str()
+	for char,offset in zip(text,offset_list):		
+		char=chr(ord(char)+offset)
+		encoded+=char
+	return encoded
+
+'''convert comprehension form into `for` loop'''
+
+In[]:
+nums = {25 , 18 , 91 , 365 , 12 , 78 , 59}
+multiplier_of_3:list[int]=[]
+for n in nums:
+	if n%3==0:
+		multiplier_of_3.append(n)
+multiplier_of_3
+
+Out[]:[18, 12, 78]
+
+In[]:
+square_of_odds=set()
+for n in nums:
+	if n%2==1:
+		square_of_odds.add(n*n)
+square_of_odds
+
+Out[]:{625, 3481, 8281, 133225}
+
+
+In[]:
+s = [25 , 18 , 91 , 365 , 12 , 78 , 59 , 18 , 91]
+sr=dict()
+for n in set(s):
+	sr[n]=n%3
+sr
+
+Out[]:{59: 2, 12: 0, 365: 2, 78: 0, 18: 0, 25: 1, 91: 1}
+
+In[]:
+tr=dict()
+for (n,r) in sr.items():
+	if r==0:
+		tr[n]=r
+tr
+
+Out[]:{12: 0, 78: 0, 18: 0}
